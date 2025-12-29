@@ -30,23 +30,30 @@ import (
 
 func main() {
     go func() {
-        proc := mgrun.New("ls -a")
+        sRun := mgrun.New("ls -a")
+
+        // Definir um diretório (Opcional)
+        pathHome,_ := os.UserHomeDir()
+		sRun.SetDir(pathHome)
+
+        // Variáveis extras (Opcional)
+        s.AddEnv("EXEMPLO", "Valor")
 
         // Callback para processar cada linha da saída padrão
-        proc.OnStderr(func(line string) {
+        sRun.OnStderr(func(line string) {
             fmt.Printf("[LOG]: %s\n", line)
         })
 
-        proc.OnStdout(func(line string) {
+        sRun.OnStdout(func(line string) {
             fmt.Printf("[LOG]: %s\n", line)
         })
 
         // Executa e aguarda a conclusão
-        if err := proc.Run(); err != nil {
+        if err := sRun.Run(); err != nil {
             fmt.Printf("Erro ou comando falhou: %v\n", err)
         }
 
-        fmt.Printf("Exit Code: %d\n", proc.ExitCode())
+        fmt.Printf("Exit Code: %d\n", sRun.ExitCode())
     }()
 }
 ```
