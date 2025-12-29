@@ -65,11 +65,16 @@ func (e *Executor) ExitCode() int {
 }
 
 func (e *Executor) Run() error {
+	e.sMutex.Lock()
+	sDir := e.dir
+	sEnv := append(os.Environ(), e.extraEnvs...)
+	e.sMutex.Unlock()
+
 	e.cmd = buildShellCommand(e.command)
-	if e.dir != "" {
-		e.cmd.Dir = e.dir
+	if sDir != "" {
+		e.cmd.Dir = sDir
 	}
-	e.cmd.Env = append(os.Environ(), e.extraEnvs...)
+	e.cmd.Env = sEnv
 
 	stdout, err := e.cmd.StdoutPipe()
 	if err != nil {
