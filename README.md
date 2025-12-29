@@ -37,7 +37,7 @@ func main() {
 		sRun.SetDir(pathHome)
 
         // Variáveis extras (Opcional)
-        s.AddEnv("EXEMPLO", "Valor")
+        sRun.AddEnv("EXEMPLO", "Valor")
 
         // Callback para processar cada linha da saída padrão
         sRun.OnStderr(func(line string) {
