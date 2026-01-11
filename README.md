@@ -1,77 +1,115 @@
 # MGRun
 
-MGRun é um wrapper leve em Go para exec que simplifica a execução de comandos do shell com suporte nativo a callbacks em tempo real para as saídas de sistema.
+**MGRun** é um wrapper leve e multiplataforma em Go para execução de comandos do sistema, projetado para simplificar o uso de `exec` com **captura de saída em tempo real**, **callbacks** e **controle seguro de concorrência**.
 
-🚀 **Funcionalidades**
+Ideal para aplicações CLI, ferramentas de automação, instaladores, utilitários desktop e sistemas que precisam acompanhar a execução de comandos enquanto eles ainda estão rodando.
 
-Multiplataforma: Abstrai a execução entre PowerShell (Windows) e SH (Linux/macOS).
+---
 
-Streaming em Tempo Real: Capture linhas de stdout e stderr via callbacks enquanto o processo ainda está rodando.
+## ✨ Recursos
 
-Thread-Safe: Gerenciamento seguro de concorrência para leitura de streams e captura de código de saída.
+* 🌍 **Multiplataforma**
+  Abstrai automaticamente a execução entre:
 
-Ambiente Herdado: Executa comandos automaticamente a partir do diretório Home do usuário e herda variáveis de ambiente do sistema.
+  * PowerShell (Windows)
+  * SH (Linux e macOS)
 
-📦 **Instalação**
+* 📡 **Streaming em tempo real**
+  Receba cada linha de `stdout` e `stderr` via callbacks enquanto o processo executa.
+
+* 🧵 **Thread-safe**
+  Leitura concorrente segura das streams e controle confiável do processo.
+
+* 🏠 **Ambiente herdado**
+
+  * Executa comandos a partir do diretório *Home* do usuário
+  * Herda variáveis de ambiente do sistema
+  * Permite adicionar variáveis customizadas
+
+* 🔁 **Código de saída acessível**
+  Obtenha o *exit code* após a finalização do processo.
+
+---
+
+## 📦 Instalação
 
 ```bash
 go get github.com/mugomes/mgrun
 ```
 
-🛠️ **Exemplo de Uso**
+---
 
-```golang
+## 🚀 Exemplo de uso
+
+```go
 package main
 
 import (
-    "fmt"
-    "github.com/mugomes/mgrun"
+	"fmt"
+	"os"
+
+	"github.com/mugomes/mgrun"
 )
 
 func main() {
-    go func() {
-        sRun := mgrun.New("ls -a")
+	sRun := mgrun.New("ls -a")
 
-        // Definir um diretório (Opcional)
-        pathHome,_ := os.UserHomeDir()
-		sRun.SetDir(pathHome)
+	// Definir diretório de execução (opcional)
+	pathHome, _ := os.UserHomeDir()
+	sRun.SetDir(pathHome)
 
-        // Variáveis extras (Opcional)
-        sRun.AddEnv("EXEMPLO", "Valor")
+	// Variáveis de ambiente extras (opcional)
+	sRun.AddEnv("EXEMPLO", "Valor")
 
-        // Callback para processar cada linha da saída padrão
-        sRun.OnStderr(func(line string) {
-            fmt.Printf("[LOG]: %s\n", line)
-        })
+	// Callback para stderr
+	sRun.OnStderr(func(line string) {
+		fmt.Printf("[STDERR]: %s\n", line)
+	})
 
-        sRun.OnStdout(func(line string) {
-            fmt.Printf("[LOG]: %s\n", line)
-        })
+	// Callback para stdout
+	sRun.OnStdout(func(line string) {
+		fmt.Printf("[STDOUT]: %s\n", line)
+	})
 
-        // Executa e aguarda a conclusão
-        if err := sRun.Run(); err != nil {
-            fmt.Printf("Erro ou comando falhou: %v\n", err)
-        }
+	// Executa o comando
+	if err := sRun.Run(); err != nil {
+		fmt.Printf("Erro na execução: %v\n", err)
+	}
 
-        fmt.Printf("Exit Code: %d\n", sRun.ExitCode())
-    }()
+	fmt.Printf("Exit Code: %d\n", sRun.ExitCode())
 }
 ```
 
-## Requerimento
+---
 
-- Go 1.25.5 ou superior
-- PowerShell (Windows)
+## ⚙️ Requisitos
 
-### Sistema Operacional
+* **Go** 1.25.5 ou superior
+* **PowerShell** (apenas no Windows)
 
-- Linux
-- Windows
-- Darwin (macOS)
+---
+
+## 🖥️ Sistemas Operacionais
+
+* ✔️ Linux
+* ✔️ Windows
+* ✔️ macOS (Darwin)
+
+---
+
+## 👤 Autor
+
+**Murilo Gomes Julio**
+
+🔗 [https://mugomes.github.io](https://mugomes.github.io)
+
+📺 [https://youtube.com/@mugomesoficial](https://youtube.com/@mugomesoficial)
+
+---
 
 ## License
 
-Copyright (c) 2025 Murilo Gomes Julio
+Copyright (c) 2025-2026 Murilo Gomes Julio
 
 Licensed under the [MIT](https://github.com/mugomes/mgrun/blob/main/LICENSE) license.
 
